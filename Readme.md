@@ -114,3 +114,14 @@ This is a monorepo. You will need to run two servers in two separate terminals.
 ## API Documentation
 
 All API endpoints, request bodies, and responses are documented in the **`API_DOCS.md`** file included in this repository.
+
+
+---
+
+## 📄 Author
+
+👨‍💻 **Tushar Mishra**  
+📧 tm3390782@gmail.com  
+🌐 [Portfolio](https://tushar-mishra-cse-portfolio.vercel.app) | [GitHub](https://github.com/tm33976) | [LinkedIn](https://www.linkedin.com/in/tushar-mishra-5253ab311/)
+
+---
