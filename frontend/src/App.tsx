@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
-import type { DragEvent, FormEvent } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import type { DragEvent, FormEvent } from "react";
 import ReactFlow, {
   ReactFlowProvider,
   useNodesState,
@@ -16,9 +11,9 @@ import ReactFlow, {
   type Node,
   type Edge,
   type OnEdgesDelete,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
-import { Toaster, toast } from 'react-hot-toast';
+} from "reactflow";
+import "reactflow/dist/style.css";
+import { Toaster, toast } from "react-hot-toast";
 import {
   Users,
   Search,
@@ -30,9 +25,13 @@ import {
   Link,
   Loader2,
   Droplet,
-} from 'lucide-react';
-import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
-import type { RootState } from './redux/store';
+} from "lucide-react";
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook,
+} from "react-redux";
+import type { RootState } from "./redux/store";
 
 const useAppDispatch = () => useDispatch<any>();
 const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -44,11 +43,11 @@ import {
   linkUsers,
   unlinkUsers,
   clearError,
-} from './redux/graphSlice';
-import type { User } from './lib/types';
+} from "./redux/graphSlice";
+import type { User } from "./lib/types";
 
 // Custom Node Imports (Bonus)
-import { HighScoreNode, LowScoreNode } from './components/CustomNodes';
+import { HighScoreNode, LowScoreNode } from "./components/CustomNodes";
 
 // For the Bonus, we map our node types
 const nodeTypes = {
@@ -69,7 +68,7 @@ function App() {
 function GraphApp() {
   const dispatch = useAppDispatch();
   const { isLoading, error } = useAppSelector((state) => state.graph);
-  
+
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -90,7 +89,7 @@ function GraphApp() {
       <Toaster
         position="top-center"
         toastOptions={{
-          className: '!bg-zinc-700 !text-zinc-100',
+          className: "!bg-zinc-700 !text-zinc-100",
         }}
       />
       {isLoading && <LoadingSpinner />}
@@ -112,12 +111,14 @@ function GraphApp() {
         isOpen={isLeftSidebarOpen}
         onClose={() => setIsLeftSidebarOpen(false)}
       />
-      
+
       <div className="w-full h-full">
-        <GraphCanvas onNodeClick={(id) => {
-          setSelectedNodeId(id);
-          setIsRightSidebarOpen(true);
-        }} />
+        <GraphCanvas
+          onNodeClick={(id) => {
+            setSelectedNodeId(id);
+            setIsRightSidebarOpen(true);
+          }}
+        />
       </div>
 
       <ManagementPanel
@@ -138,18 +139,16 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
   const { nodes: storeNodes, edges: storeEdges } = useAppSelector(
     (state) => state.graph
   );
-  
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
 
- 
   useEffect(() => {
     setNodes(storeNodes);
     setEdges(storeEdges);
   }, [storeNodes, storeEdges, setNodes, setEdges]);
 
-  
   const onNodesChangeDebounced = useCallback(
     (changes: any) => {
       onNodesChange(changes);
@@ -165,8 +164,8 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
             linkUsers({ userId: params.source, friendId: params.target })
           ).unwrap(),
           {
-            loading: 'Linking users...',
-            success: 'Users linked!',
+            loading: "Linking users...",
+            success: "Users linked!",
             error: (err) => err.toString(),
           }
         );
@@ -185,8 +184,8 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
           unlinkUsers({ userId: edge.source, friendId: edge.target })
         ).unwrap(),
         {
-          loading: 'Unlinking users...',
-          success: 'Friendship removed!',
+          loading: "Unlinking users...",
+          success: "Friendship removed!",
           error: (err) => err.toString(),
         }
       );
@@ -196,9 +195,9 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
 
   const onDragOver = useCallback((event: DragEvent) => {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
+    event.dataTransfer.dropEffect = "move";
   }, []);
-  
+
   const onNodeClickCallback = (_event: React.MouseEvent, node: Node) => {
     onNodeClick(node.id);
   };
@@ -212,7 +211,7 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
       onConnect={onConnect}
       onEdgesDelete={onEdgesDelete}
       onNodeClick={onNodeClickCallback}
-      onDragOver={onDragOver} 
+      onDragOver={onDragOver}
       nodeTypes={nodeTypes}
       fitView
       className="bg-zinc-800"
@@ -223,15 +222,23 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
   );
 }
 
-//  4. The Hobbies Sidebar (Left)
-function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+//  The Hobbies Sidebar (Left)
+function Sidebar({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const users = useAppSelector((state) => state.graph.users);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState("");
 
   // Fix for duplicate hobbies
   const allHobbies = useMemo(() => {
     const hobbySet = new Set<string>();
-    ['Gaming', 'Reading', 'Hiking', 'Coding', 'Cooking'].forEach(h => hobbySet.add(h));
+    ["Gaming", "Reading", "Hiking", "Coding", "Cooking"].forEach((h) =>
+      hobbySet.add(h)
+    );
     users.forEach((user) => {
       user.hobbies.forEach((hobby) => hobbySet.add(hobby));
     });
@@ -241,11 +248,11 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   const filteredHobbies = allHobbies.filter((hobby) =>
     hobby.toLowerCase().includes(filter.toLowerCase())
   );
-  
+
   const onDragStart = (event: DragEvent, hobbyName: string) => {
-    event.dataTransfer.setData('application/reactflow', 'hobby');
-    event.dataTransfer.setData('hobbyName', hobbyName);
-    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData("application/reactflow", "hobby");
+    event.dataTransfer.setData("hobbyName", hobbyName);
+    event.dataTransfer.effectAllowed = "move";
   };
 
   return (
@@ -255,7 +262,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
         sm:h-auto sm:top-4 sm:left-4 sm:max-h-[calc(100vh-2rem)]
         bg-zinc-800/80 backdrop-blur-md border border-zinc-700/80 rounded-lg
         shadow-xl w-64 p-4 transition-transform
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
         sm:translate-x-0
       `}
     >
@@ -305,7 +312,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   );
 }
 
-//  The Management Panel (Right) 
+//  The Management Panel (Right)
 function ManagementPanel({
   isOpen,
   onClose,
@@ -319,10 +326,10 @@ function ManagementPanel({
     state.graph.users.find((u) => u.id === selectedNodeId)
   );
 
-  const [activeTab, setActiveTab] = useState<'create' | 'edit'>('create');
+  const [activeTab, setActiveTab] = useState<"create" | "edit">("create");
 
   useEffect(() => {
-    setActiveTab(selectedUser ? 'edit' : 'create');
+    setActiveTab(selectedUser ? "edit" : "create");
   }, [selectedUser]);
 
   return (
@@ -332,7 +339,7 @@ function ManagementPanel({
         sm:h-auto sm:top-4 sm:right-4 sm:max-h-[calc(100vh-2rem)]
         bg-zinc-800/80 backdrop-blur-md border border-zinc-700/80 rounded-lg
         shadow-xl w-72 p-4 transition-transform
-        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+        ${isOpen ? "translate-x-0" : "translate-x-full"}
         sm:translate-x-0
       `}
     >
@@ -348,22 +355,22 @@ function ManagementPanel({
 
       <div className="flex mb-4 border-b border-zinc-700">
         <button
-          onClick={() => setActiveTab('create')}
+          onClick={() => setActiveTab("create")}
           className={`flex-1 py-2 text-sm ${
-            activeTab === 'create'
-              ? 'border-b-2 border-blue-500 text-white'
-              : 'text-zinc-400'
+            activeTab === "create"
+              ? "border-b-2 border-blue-500 text-white"
+              : "text-zinc-400"
           }`}
         >
           Create User
         </button>
         <button
-          onClick={() => setActiveTab('edit')}
+          onClick={() => setActiveTab("edit")}
           disabled={!selectedUser}
           className={`flex-1 py-2 text-sm ${
-            activeTab === 'edit'
-              ? 'border-b-2 border-blue-500 text-white'
-              : 'text-zinc-400'
+            activeTab === "edit"
+              ? "border-b-2 border-blue-500 text-white"
+              : "text-zinc-400"
           } disabled:text-zinc-600 disabled:cursor-not-allowed`}
         >
           Edit User
@@ -371,8 +378,8 @@ function ManagementPanel({
       </div>
 
       <div className="overflow-y-auto max-h-[70vh] sm:max-h-[calc(100vh-12rem)]">
-        {activeTab === 'create' && <CreateUserForm onCreated={onClose} />}
-        {activeTab === 'edit' && selectedUser && (
+        {activeTab === "create" && <CreateUserForm onCreated={onClose} />}
+        {activeTab === "edit" && selectedUser && (
           <EditUserForm user={selectedUser} onUpdated={onClose} />
         )}
       </div>
@@ -380,17 +387,17 @@ function ManagementPanel({
   );
 }
 
-// 6. Create User Form
+//  Create User Form
 function CreateUserForm({ onCreated }: { onCreated: () => void }) {
   const dispatch = useAppDispatch();
-  const [username, setUsername] = useState('');
-  const [age, setAge] = useState('');
-  const [hobbies, setHobbies] = useState('');
+  const [username, setUsername] = useState("");
+  const [age, setAge] = useState("");
+  const [hobbies, setHobbies] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!username || !age) {
-      toast.error('Username and Age are required.');
+      toast.error("Username and Age are required.");
       return;
     }
 
@@ -399,14 +406,17 @@ function CreateUserForm({ onCreated }: { onCreated: () => void }) {
         createUser({
           username,
           age: parseInt(age),
-          hobbies: hobbies.split(',').filter(Boolean).map(h => h.trim()),
+          hobbies: hobbies
+            .split(",")
+            .filter(Boolean)
+            .map((h) => h.trim()),
         })
       ).unwrap(),
       {
-        loading: 'Creating user...',
+        loading: "Creating user...",
         success: (data) => {
           onCreated();
-          return 'User created!';
+          return "User created!";
         },
         error: (err) => err.toString(),
       }
@@ -444,7 +454,7 @@ function CreateUserForm({ onCreated }: { onCreated: () => void }) {
   );
 }
 
-// Edit User Form 
+// Edit User Form
 function EditUserForm({
   user,
   onUpdated,
@@ -455,13 +465,13 @@ function EditUserForm({
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState(user.username);
   const [age, setAge] = useState(user.age.toString());
-  const [hobbies, setHobbies] = useState(user.hobbies.join(', '));
+  const [hobbies, setHobbies] = useState(user.hobbies.join(", "));
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     setUsername(user.username);
     setAge(user.age.toString());
-    setHobbies(user.hobbies.join(', '));
+    setHobbies(user.hobbies.join(", "));
   }, [user]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -472,12 +482,15 @@ function EditUserForm({
           id: user.id,
           username,
           age: parseInt(age),
-          hobbies: hobbies.split(',').filter(Boolean).map(h => h.trim()),
+          hobbies: hobbies
+            .split(",")
+            .filter(Boolean)
+            .map((h) => h.trim()),
         })
       ).unwrap(),
       {
-        loading: 'Updating user...',
-        success: 'User updated!',
+        loading: "Updating user...",
+        success: "User updated!",
         error: (err) => err.toString(),
       }
     );
@@ -485,17 +498,14 @@ function EditUserForm({
 
   const handleDelete = () => {
     setIsDeleteModalOpen(false);
-    toast.promise(
-      dispatch(deleteUser(user.id)).unwrap(),
-      {
-        loading: 'Deleting user...',
-        success: () => {
-          onUpdated();
-          return 'User deleted!';
-        },
-        error: (err) => err.toString(),
-      }
-    );
+    toast.promise(dispatch(deleteUser(user.id)).unwrap(), {
+      loading: "Deleting user...",
+      success: () => {
+        onUpdated();
+        return "User deleted!";
+      },
+      error: (err) => err.toString(),
+    });
   };
 
   return (

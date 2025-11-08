@@ -1,4 +1,3 @@
-
 class AppError extends Error {
   public statusCode: number;
   public status: 'fail' | 'error';

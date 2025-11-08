@@ -1,6 +1,5 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-
-import { v4 as uuidv4 } from 'uuid'; 
+import mongoose, { Schema, Document, Model } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 //  TypeScript Interface
 export interface IUser extends Document {
@@ -10,16 +9,16 @@ export interface IUser extends Document {
   hobbies: string[];
   friends: string[];
   createdAt: Date;
-  
+
   // This is a computed property
-  popularityScore: number; 
+  popularityScore: number;
 
   // Instance Methods
   calculatePopularityScore(allUsers?: IUser[]): Promise<number>;
   isFriendWith(userId: string): boolean;
 }
 
-//  Mongoose Schema 
+//  Mongoose Schema
 const UserSchema: Schema<IUser> = new Schema(
   {
     _id: {
@@ -28,15 +27,15 @@ const UserSchema: Schema<IUser> = new Schema(
     },
     username: {
       type: String,
-      required: [true, 'Username is required'],
+      required: [true, "Username is required"],
       trim: true,
       unique: true,
       index: true,
     },
     age: {
       type: Number,
-      required: [true, 'Age is required'],
-      min: [13, 'User must be at least 13 years old'],
+      required: [true, "Age is required"],
+      min: [13, "User must be at least 13 years old"],
     },
     hobbies: {
       type: [String],
@@ -44,21 +43,19 @@ const UserSchema: Schema<IUser> = new Schema(
     },
     friends: {
       type: [String],
-      ref: 'User',
+      ref: "User",
       default: [],
     },
   },
   {
     timestamps: true,
-    
-   
-    
+
     transform: (doc: any, ret: any) => {
       ret.id = ret._id; // Create 'id'
-      delete ret._id;   // Delete '_id'
-      delete ret.__v;   // Delete '__v'
+      delete ret._id; // Delete '_id'
+      delete ret.__v; // Delete '__v'
     },
-    
+
     toJSON: {
       virtuals: true,
       transform: (doc: any, ret: any) => {
@@ -67,7 +64,7 @@ const UserSchema: Schema<IUser> = new Schema(
         delete ret.__v;
       },
     },
-    
+
     toObject: {
       virtuals: true,
       transform: (doc: any, ret: any) => {
@@ -76,37 +73,42 @@ const UserSchema: Schema<IUser> = new Schema(
         delete ret.__v;
       },
     },
- 
   }
 );
 
 //  Business Logic (Methods)
 
-UserSchema.methods.calculatePopularityScore = async function(allUsers?: IUser[]): Promise<number> {
+UserSchema.methods.calculatePopularityScore = async function (
+  allUsers?: IUser[]
+): Promise<number> {
   const user = this as IUser;
   const numFriends = user.friends.length;
   let sharedHobbiesCount = 0;
 
-  const usersToCompare = allUsers || await mongoose.model<IUser>('User').find({
-    _id: { $in: user.friends },
-  });
+  const usersToCompare =
+    allUsers ||
+    (await mongoose.model<IUser>("User").find({
+      _id: { $in: user.friends },
+    }));
 
-  const friends = usersToCompare.filter(u => user.friends.includes(u._id));
+  const friends = usersToCompare.filter((u) => user.friends.includes(u._id));
 
   for (const friend of friends) {
-    const shared = user.hobbies.filter(hobby => friend.hobbies.includes(hobby));
+    const shared = user.hobbies.filter((hobby) =>
+      friend.hobbies.includes(hobby)
+    );
     sharedHobbiesCount += shared.length;
   }
 
-  const score = numFriends + (sharedHobbiesCount * 0.5);
+  const score = numFriends + sharedHobbiesCount * 0.5;
   return score;
 };
 
-UserSchema.methods.isFriendWith = function(userId: string): boolean {
+UserSchema.methods.isFriendWith = function (userId: string): boolean {
   return (this as IUser).friends.includes(userId);
 };
 
 //Model Creation
-const UserModel: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
+const UserModel: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
 
 export default UserModel;

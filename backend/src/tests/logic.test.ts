@@ -73,7 +73,7 @@ describe('User & Graph API Logic Tests', () => {
     
     // Now, update User B's hobbies
     const res = await server.put(`/api/users/${userB_id}`).send({
-      hobbies: ['Reading', 'Hiking', 'Coding'], // Now they share 'Reading' AND 'Coding'
+      hobbies: ['Reading', 'Hiking', 'Coding'],
     });
     
     expect(res.statusCode).toEqual(200);

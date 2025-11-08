@@ -12,8 +12,6 @@ const app = express();
 //  Middleware 
 app.use(helmet());
 
-// We now read the frontend URL from the environment,
-// but we keep 'localhost:5173' as a fallback for development.
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],

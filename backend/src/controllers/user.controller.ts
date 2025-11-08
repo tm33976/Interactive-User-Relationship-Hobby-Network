@@ -1,14 +1,12 @@
-import UserModel from '../models/User.model';
-import asyncHandler from '../utils/asyncHandler';
-import AppError from '../utils/AppError';
-import { sendLatestGraphData } from './graph.controller';
-
+import UserModel from "../models/User.model";
+import asyncHandler from "../utils/asyncHandler";
+import AppError from "../utils/AppError";
+import { sendLatestGraphData } from "./graph.controller";
 
 export const getAllUsers = asyncHandler(async (req, res, next) => {
- 
   const users = await UserModel.find({});
   res.status(200).json({
-    status: 'success',
+    status: "success",
     count: users.length,
     data: users,
   });
@@ -23,7 +21,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
   const { username, age, hobbies } = req.body;
 
   if (!username || !age) {
-    return next(new AppError('Username and age are required', 400));
+    return next(new AppError("Username and age are required", 400));
   }
 
   await UserModel.create({
@@ -32,8 +30,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     hobbies: hobbies || [],
   });
 
-
-  await sendLatestGraphData(res, 'User created successfully');
+  await sendLatestGraphData(res, "User created successfully");
 });
 
 /**
@@ -49,17 +46,16 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     id,
     { username, age, hobbies },
     {
-      new: true, 
-      runValidators: true, 
+      new: true,
+      runValidators: true,
     }
   );
 
   if (!user) {
-    return next(new AppError('No user found with that ID', 404));
+    return next(new AppError("No user found with that ID", 404));
   }
 
-  
-  await sendLatestGraphData(res, 'User updated successfully');
+  await sendLatestGraphData(res, "User updated successfully");
 });
 
 /**
@@ -72,16 +68,16 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findById(id);
 
   if (!user) {
-    return next(new AppError('No user found with that ID', 404));
+    return next(new AppError("No user found with that ID", 404));
   }
 
-  //  Requirement 3: Deletion Rules 
+  //  Requirement 3: Deletion Rules
   // A user cannot be deleted while still connected as a friend
   if (user.friends.length > 0) {
     return next(
       new AppError(
-        'Cannot delete user. Please unlink all friendships first.',
-        409 
+        "Cannot delete user. Please unlink all friendships first.",
+        409
       )
     );
   }
@@ -90,7 +86,7 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
   await UserModel.findByIdAndDelete(id);
 
   // Send back the updated graph
-  await sendLatestGraphData(res, 'User deleted successfully');
+  await sendLatestGraphData(res, "User deleted successfully");
 });
 
 /**
@@ -103,7 +99,7 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
   const { friendId } = req.body;
 
   if (userId === friendId) {
-    return next(new AppError('Cannot link a user to themselves', 400));
+    return next(new AppError("Cannot link a user to themselves", 400));
   }
 
   // Find both users at the same time
@@ -113,10 +109,10 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
   ]);
 
   if (!user || !friend) {
-    return next(new AppError('One or both users not found', 404));
+    return next(new AppError("One or both users not found", 404));
   }
 
-  //  Requirement 3: Circular Friendship Prevention 
+  //  Requirement 3: Circular Friendship Prevention
   // We only add if they aren't already friends
   let updated = false;
 
@@ -130,7 +126,7 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
   }
 
   if (!updated) {
-    return next(new AppError('Users are already friends', 400));
+    return next(new AppError("Users are already friends", 400));
   }
 
   // Save both updates
@@ -138,7 +134,7 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
 
   // Friendships changed, so scores will change.
   // Send back the updated graph.
-  await sendLatestGraphData(res, 'Friendship created');
+  await sendLatestGraphData(res, "Friendship created");
 });
 
 /**
@@ -148,10 +144,10 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
  */
 export const unlinkUsers = asyncHandler(async (req, res, next) => {
   const { id: userId } = req.params;
-  const { friendId } = req.body; 
+  const { friendId } = req.body;
 
   if (!friendId) {
-    return next(new AppError('friendId is required in the body', 400));
+    return next(new AppError("friendId is required in the body", 400));
   }
 
   // Find both users
@@ -161,7 +157,7 @@ export const unlinkUsers = asyncHandler(async (req, res, next) => {
   ]);
 
   if (!user || !friend) {
-    return next(new AppError('One or both users not found', 404));
+    return next(new AppError("One or both users not found", 404));
   }
 
   // Remove the friend from each user's list
@@ -174,5 +170,5 @@ export const unlinkUsers = asyncHandler(async (req, res, next) => {
 
   // Friendships changed, so scores will change.
   // Send back the updated graph.
-  await sendLatestGraphData(res, 'Friendship removed');
+  await sendLatestGraphData(res, "Friendship removed");
 });
