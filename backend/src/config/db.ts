@@ -19,23 +19,17 @@ const connectDB = async () => {
     // Attempt to connect to the database
     // We add some good-practice options here
     await mongoose.connect(mongoUri, {
-      // These options are no longer needed in Mongoose 6+
-      // but it's good to know they exist if you use an older version.
-      // Mongoose 6+ has them as defaults:
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
+  
     });
 
     logger.info('MongoDB Connected successfully.');
-
-    // Listen for any errors *after* the initial connection
     mongoose.connection.on('error', (err) => {
       logger.error('MongoDB connection error:', err);
     });
 
   } catch (error) {
     logger.error('Could not connect to MongoDB:', error as Error);
-    process.exit(1); // Exit if we can't connect
+    process.exit(1); 
   }
 };
 

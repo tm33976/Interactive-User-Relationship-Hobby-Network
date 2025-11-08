@@ -14,13 +14,12 @@ import type { AppDispatch, RootState } from '../redux/store'
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
-// --- Create a debounced update function (Bonus Point 10) ---
+// Create a debounced update function (Bonus Point 10)
 // We wrap our dispatch in a debounce so we don't spam the API.
 const debouncedUpdateUser = debounce((dispatch, args) => {
   dispatch(updateUser(args));
 }, 300); // Wait 300ms after the last drop
 
-// --- Base Node Component ---
 // Both nodes will share this structure.
 const UserNode = ({
   data,
@@ -56,15 +55,15 @@ const UserNode = ({
     event.dataTransfer.dropEffect = 'move';
   };
 
-  // --- Dynamic Styling ---
+ 
   // We'll change the style based on the 'isHighScore' prop
   const nodeClasses = [
     'react-flow__node-default', // Base React Flow style
     'shadow-xl rounded-lg w-48 transition-all ease-in-out',
-    'bg-zinc-800/80 backdrop-blur-md', // Modern glassmorphism
+    'bg-zinc-800/80 backdrop-blur-md',
     isHighScore
-      ? 'border-2 border-yellow-400/80 shadow-yellow-400/10' // High score style
-      : 'border border-zinc-700/80', // Low score style
+      ? 'border-2 border-yellow-400/80 shadow-yellow-400/10' 
+      : 'border border-zinc-700/80', 
   ].join(' ');
 
   return (
@@ -117,8 +116,7 @@ const UserNode = ({
   );
 };
 
-// --- Export the two memoized node types ---
-// This fulfills Bonus Point 9
+
 export const HighScoreNode = memo((props: NodeProps<User>) => (
   <UserNode data={props.data} isHighScore={true} />
 ));

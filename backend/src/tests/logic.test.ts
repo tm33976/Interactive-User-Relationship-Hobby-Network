@@ -1,16 +1,14 @@
-import { server } from './setup'; // We import our server wrapper
-
-// We group our tests together with 'describe'
+import { server } from './setup'; 
 describe('User & Graph API Logic Tests', () => {
   
   // These variables will be re-set before each test
   let userA_id: string;
   let userB_id: string;
-  let userC_id: string; // For the 'create' test
+  let userC_id: string; 
 
-  // --- THIS IS THE FIX ---
-  // This hook runs *before each test* in this file.
-  // It runs *after* the database wipe in setup.ts
+
+  // This hook runs before each test in this file.
+  // It runs after the database wipe in setup.ts
   beforeEach(async () => {
     // 1. Create User A
     const resA = await server.post('/api/users').send({
@@ -24,13 +22,13 @@ describe('User & Graph API Logic Tests', () => {
     const resB = await server.post('/api/users').send({
       username: 'UserB',
       age: 25,
-      hobbies: ['Reading', 'Hiking'], // Note: 'Reading' is shared
+      hobbies: ['Reading', 'Hiking'], 
     });
     userB_id = resB.body.data.users.find((u: any) => u.username === 'UserB').id;
   });
-  // --- END OF FIX ---
+  
 
-  // Test 1: Test creating a user (this is the new test 1)
+  // Test 1: Test creating a user 
   test('should create a new user', async () => {
     const res = await server.post('/api/users').send({
       username: 'UserC',
@@ -57,9 +55,9 @@ describe('User & Graph API Logic Tests', () => {
     const nodeA = res.body.data.nodes.find((n: any) => n.id === userA_id);
     const nodeB = res.body.data.nodes.find((n: any) => n.id === userB_id);
 
-    // --- Popularity Score Logic Test ---
+    //  Popularity Score Logic Test 
     // They share one hobby: 'Reading'
-    // Score = 1 friend + (1 shared hobby * 0.5) = 1.5
+   
     expect(nodeA.data.popularityScore).toEqual(1.5);
     expect(nodeB.data.popularityScore).toEqual(1.5);
 
@@ -83,7 +81,7 @@ describe('User & Graph API Logic Tests', () => {
     const nodeA = res.body.data.nodes.find((n: any) => n.id === userA_id);
     const nodeB = res.body.data.nodes.find((n: any) => n.id === userB_id);
 
-    // --- New Score Test ---
+    //  New Score Test 
     // Score = 1 friend + (2 shared hobbies * 0.5) = 2.0
     expect(nodeA.data.popularityScore).toEqual(2.0);
     expect(nodeB.data.popularityScore).toEqual(2.0);
@@ -126,7 +124,7 @@ describe('User & Graph API Logic Tests', () => {
     expect(res.body.data.edges.length).toEqual(0);
   });
 
-  // Test 6: Can we delete a user *after* unlinking?
+  // Test 6: Can we delete a user after unlinking?
   test('should SUCCEED in deleting User A (now unlinked)', async () => {
     // Users A and B exist, but are not linked.
     const res = await server.delete(`/api/users/${userA_id}`);

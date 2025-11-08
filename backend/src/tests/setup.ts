@@ -1,6 +1,6 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import app from '../app'; // Import our express app
+import app from '../app'; 
 
 // We'll need a reference to the 'mongod' server
 let mongod: MongoMemoryServer;
@@ -8,11 +8,10 @@ let mongod: MongoMemoryServer;
 // We'll export 'server' so our tests can use it
 export const server = require('supertest')(app);
 
-// --- Runs BEFORE all tests ---
+//Runs BEFORE all tests
 beforeAll(async () => {
-  // --- FIX 1: Increase Jest's timeout ---
-  // We'll give it 60 seconds (60000 ms)
-  // This is only for the first-time download
+  
+  
   jest.setTimeout(60000);
 
   mongod = await MongoMemoryServer.create();
@@ -20,7 +19,7 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 });
 
-// --- Runs BEFORE EACH test ---
+//  Runs BEFORE EACH test 
 beforeEach(async () => {
   const db = mongoose.connection.db;
   if (db) {
@@ -31,7 +30,7 @@ beforeEach(async () => {
   }
 });
 
-// --- Runs AFTER all tests ---
+//  Runs AFTER all tests 
 afterAll(async () => {
   // We also check for 'db' here for safety
   const db = mongoose.connection.db;
@@ -40,7 +39,7 @@ afterAll(async () => {
   }
   await mongoose.connection.close();
 
-  // --- FIX 2: Add a safety check ---
+
   // Only stop mongod *if* it successfully started
   if (mongod) {
     await mongod.stop();

@@ -1,21 +1,17 @@
 import UserModel, { IUser } from '../models/User.model';
 import asyncHandler from '../utils/asyncHandler';
 import { Response } from 'express';
-import { Node, Edge } from 'reactflow'; // Using React Flow types for clarity
+import { Node,  Edge } from 'reactflow'; 
 
-/**
- * --- Private Helper Function ---
- * This is the heart of our state-sync logic.
- */
 const getGraphDataPayload = async (): Promise<{
-  nodes: Node<IUser>[]; // We can strongly type this now
+  nodes: Node<IUser>[]; 
   edges: Edge[];
   users: IUser[];
 }> => {
-  // 1. Fetch all users
+  // Fetch all users
   const allUsers = await UserModel.find({});
 
-  // 2. Calculate popularity scores for everyone
+  // Calculate popularity scores for everyone
   const usersWithScores = await Promise.all(
     allUsers.map(async (user) => {
       const score = await user.calculatePopularityScore(allUsers);
@@ -25,7 +21,7 @@ const getGraphDataPayload = async (): Promise<{
     })
   );
 
-  // 3. Map users to React Flow 'nodes'
+  //Map users to React Flow 'nodes'
   const nodes: Node<IUser>[] = usersWithScores.map((user) => {
     const nodeType = user.popularityScore > 5 ? 'highScoreNode' : 'lowScoreNode';
 
@@ -34,19 +30,15 @@ const getGraphDataPayload = async (): Promise<{
       type: nodeType,
       position: { x: Math.random() * 500, y: Math.random() * 500 },
       data: {
-        // --- THIS IS THE FIX ---
-        // We must include the id *inside* the data prop
-        // so our CustomNode can access it.
+        
         id: user.id.toString(),
-        // --- END OF FIX ---
+       
         
         username: user.username,
         age: user.age,
         hobbies: user.hobbies,
         popularityScore: user.popularityScore,
-        
-        // We need to satisfy the IUser type, but these aren't needed
-        // in the node data itself.
+       
         _id: user.id.toString(),
         friends: user.friends,
         createdAt: user.createdAt,
@@ -56,7 +48,7 @@ const getGraphDataPayload = async (): Promise<{
     };
   });
 
-  // 4. Map friendships to React Flow 'edges'
+  // Map friendships to React Flow edges
   const edges: Edge[] = [];
   const edgeSet = new Set<string>();
 
@@ -93,7 +85,7 @@ export const getGraphData = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * --- Public Helper Function ---
+ *  Public Helper Function 
  */
 export const sendLatestGraphData = async (res: Response, message: string) => {
   const graphData = await getGraphDataPayload();

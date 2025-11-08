@@ -3,15 +3,9 @@ import asyncHandler from '../utils/asyncHandler';
 import AppError from '../utils/AppError';
 import { sendLatestGraphData } from './graph.controller';
 
-/**
- * @desc    Get all users (we'll replace this with the graph controller)
- * @route   GET /api/users
- * @access  Public
- * @note    This is functionally replaced by GET /api/graph,
- * but we include it to match the spec.
- */
+
 export const getAllUsers = asyncHandler(async (req, res, next) => {
-  // In our app, the graph controller is better, but we follow the spec
+ 
   const users = await UserModel.find({});
   res.status(200).json({
     status: 'success',
@@ -38,8 +32,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     hobbies: hobbies || [],
   });
 
-  // After creating, send back the *entire* updated graph
-  // This keeps the frontend state perfectly in sync
+
   await sendLatestGraphData(res, 'User created successfully');
 });
 
@@ -56,8 +49,8 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     id,
     { username, age, hobbies },
     {
-      new: true, // Return the new, updated document
-      runValidators: true, // Run Mongoose validation
+      new: true, 
+      runValidators: true, 
     }
   );
 
@@ -65,8 +58,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     return next(new AppError('No user found with that ID', 404));
   }
 
-  // Hobbies might have changed, so scores will change.
-  // Send back the updated graph.
+  
   await sendLatestGraphData(res, 'User updated successfully');
 });
 
@@ -83,13 +75,13 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     return next(new AppError('No user found with that ID', 404));
   }
 
-  // --- Requirement 3: Deletion Rules ---
+  //  Requirement 3: Deletion Rules 
   // A user cannot be deleted while still connected as a friend
   if (user.friends.length > 0) {
     return next(
       new AppError(
         'Cannot delete user. Please unlink all friendships first.',
-        409 // 409 Conflict
+        409 
       )
     );
   }
@@ -124,7 +116,7 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
     return next(new AppError('One or both users not found', 404));
   }
 
-  // --- Requirement 3: Circular Friendship Prevention ---
+  //  Requirement 3: Circular Friendship Prevention 
   // We only add if they aren't already friends
   let updated = false;
 
@@ -156,7 +148,7 @@ export const linkUsers = asyncHandler(async (req, res, next) => {
  */
 export const unlinkUsers = asyncHandler(async (req, res, next) => {
   const { id: userId } = req.params;
-  const { friendId } = req.body; // We'll expect the friendId in the body
+  const { friendId } = req.body; 
 
   if (!friendId) {
     return next(new AppError('friendId is required in the body', 400));

@@ -1,6 +1,3 @@
-// This is a simple logger to make our console messages cleaner
-// In a real production app, you'd use a more robust logger like Winston or Pino
-
 const getTimestamp = (): string => new Date().toISOString();
 
 export const logger = {

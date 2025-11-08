@@ -31,12 +31,9 @@ import {
   Loader2,
   Droplet,
 } from 'lucide-react';
-
-// --- Redux Imports ---
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
 import type { RootState } from './redux/store';
 
-// Lightweight typed hooks to replace the missing ./redux/hooks module
 const useAppDispatch = () => useDispatch<any>();
 const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 import {
@@ -50,7 +47,7 @@ import {
 } from './redux/graphSlice';
 import type { User } from './lib/types';
 
-// --- Custom Node Imports (Bonus) ---
+// Custom Node Imports (Bonus)
 import { HighScoreNode, LowScoreNode } from './components/CustomNodes';
 
 // For the Bonus, we map our node types
@@ -59,7 +56,7 @@ const nodeTypes = {
   lowScoreNode: LowScoreNode,
 };
 
-// --- 1. Main App Component (Wrapper) ---
+//  1. Main App Component (Wrapper)
 function App() {
   return (
     <ReactFlowProvider>
@@ -68,7 +65,7 @@ function App() {
   );
 }
 
-// --- 2. The Main Application UI ---
+//The Main Application UI
 function GraphApp() {
   const dispatch = useAppDispatch();
   const { isLoading, error } = useAppSelector((state) => state.graph);
@@ -135,7 +132,7 @@ function GraphApp() {
   );
 }
 
-// --- 3. The React Flow Graph Canvas ---
+//The React Flow Graph Canvas
 function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
   const dispatch = useAppDispatch();
   const { nodes: storeNodes, edges: storeEdges } = useAppSelector(
@@ -146,16 +143,12 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
 
-  // --- THIS IS THE FIX ---
-  // We remove the faulty 'if' statements and always sync
-  // Redux state with React Flow's internal state.
-  // This ensures that when a link is made and scores update,
-  // the new node data is pushed to React Flow immediately.
+ 
   useEffect(() => {
     setNodes(storeNodes);
     setEdges(storeEdges);
   }, [storeNodes, storeEdges, setNodes, setEdges]);
-  // --- END OF FIX ---
+
   
   const onNodesChangeDebounced = useCallback(
     (changes: any) => {
@@ -230,7 +223,7 @@ function GraphCanvas({ onNodeClick }: { onNodeClick: (id: string) => void }) {
   );
 }
 
-// --- 4. The "Hobbies" Sidebar (Left) ---
+//  4. The Hobbies Sidebar (Left)
 function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const users = useAppSelector((state) => state.graph.users);
   const [filter, setFilter] = useState('');
@@ -312,7 +305,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   );
 }
 
-// --- 5. The "Management" Panel (Right) ---
+//  The Management Panel (Right) 
 function ManagementPanel({
   isOpen,
   onClose,
@@ -387,7 +380,7 @@ function ManagementPanel({
   );
 }
 
-// --- 6. Create User Form ---
+// 6. Create User Form
 function CreateUserForm({ onCreated }: { onCreated: () => void }) {
   const dispatch = useAppDispatch();
   const [username, setUsername] = useState('');
@@ -451,7 +444,7 @@ function CreateUserForm({ onCreated }: { onCreated: () => void }) {
   );
 }
 
-// --- 7. Edit User Form ---
+// Edit User Form 
 function EditUserForm({
   user,
   onUpdated,
@@ -554,7 +547,7 @@ function EditUserForm({
   );
 }
 
-// --- 8. Reusable UI Components ---
+//  Reusable UI Components
 
 function FormInput({
   label,

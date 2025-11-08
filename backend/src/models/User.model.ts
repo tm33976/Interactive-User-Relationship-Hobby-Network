@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-// We are using uuid@8, which is CJS
+
 import { v4 as uuidv4 } from 'uuid'; 
 
-// --- TypeScript Interface ---
+//  TypeScript Interface
 export interface IUser extends Document {
   _id: string;
   username: string;
@@ -14,12 +14,12 @@ export interface IUser extends Document {
   // This is a computed property
   popularityScore: number; 
 
-  // --- Instance Methods ---
+  // Instance Methods
   calculatePopularityScore(allUsers?: IUser[]): Promise<number>;
   isFriendWith(userId: string): boolean;
 }
 
-// --- Mongoose Schema ---
+//  Mongoose Schema 
 const UserSchema: Schema<IUser> = new Schema(
   {
     _id: {
@@ -51,9 +51,7 @@ const UserSchema: Schema<IUser> = new Schema(
   {
     timestamps: true,
     
-    // --- THIS IS THE FIX ---
-    // We create a single transform function
-    // and apply it to *both* toJSON and toObject
+   
     
     transform: (doc: any, ret: any) => {
       ret.id = ret._id; // Create 'id'
@@ -78,11 +76,11 @@ const UserSchema: Schema<IUser> = new Schema(
         delete ret.__v;
       },
     },
-    // --- END OF FIX ---
+ 
   }
 );
 
-// --- Business Logic (Methods) ---
+//  Business Logic (Methods)
 
 UserSchema.methods.calculatePopularityScore = async function(allUsers?: IUser[]): Promise<number> {
   const user = this as IUser;
@@ -108,7 +106,7 @@ UserSchema.methods.isFriendWith = function(userId: string): boolean {
   return (this as IUser).friends.includes(userId);
 };
 
-// --- Model Creation ---
+//Model Creation
 const UserModel: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 
 export default UserModel;
