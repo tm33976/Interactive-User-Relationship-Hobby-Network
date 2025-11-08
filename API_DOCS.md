@@ -1,6 +1,6 @@
 # API Documentation
 
-**Base URL:** `https://cybernauts-backend-lb3k.onrender.com/api`
+**Base URL:** `https://cybernauts-backend-lb3k.onrender.com/`
 *(For local development, use `http://localhost:5000/api`)*
 
 This document outlines all the available endpoints for the Interactive User Relationship & Hobby Network API, as specified in the project requirements.
