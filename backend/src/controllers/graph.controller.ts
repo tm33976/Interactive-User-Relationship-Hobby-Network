@@ -2,10 +2,8 @@ import UserModel, { IUser } from '../models/User.model';
 import asyncHandler from '../utils/asyncHandler';
 import { Response } from 'express';
 
-/**
- * --- Private Helper Function ---
- */
-// --- FIX: Revert types to generic 'any' arrays ---
+
+
 const getGraphDataPayload = async (): Promise<{
   nodes: any[];
   edges: any[];
@@ -27,7 +25,7 @@ const getGraphDataPayload = async (): Promise<{
   );
 
   // 3. Map users to React Flow 'nodes'
-  // --- FIX: Revert type to generic 'any' array ---
+
   const nodes: any[] = usersWithScores.map((user) => {
     const nodeType = user.popularityScore > 5 ? 'highScoreNode' : 'lowScoreNode';
 
@@ -35,7 +33,7 @@ const getGraphDataPayload = async (): Promise<{
       id: user.id.toString(),
       type: nodeType,
       position: { x: Math.random() * 500, y: Math.random() * 500 },
-      // --- FIX: Simplified data object. We ONLY send what the frontend needs. ---
+   
       data: {
         id: user.id.toString(),
         username: user.username,
@@ -43,12 +41,12 @@ const getGraphDataPayload = async (): Promise<{
         hobbies: user.hobbies,
         popularityScore: user.popularityScore,
       },
-      // --- END OF FIX ---
+      
     };
   });
 
   // 4. Map friendships to React Flow 'edges'
-  // --- FIX: Revert type to generic 'any' array ---
+
   const edges: any[] = [];
   const edgeSet = new Set<string>();
 
@@ -84,9 +82,7 @@ export const getGraphData = asyncHandler(async (req, res, next) => {
   });
 });
 
-/**
- * --- Public Helper Function ---
- */
+
 export const sendLatestGraphData = async (res: Response, message: string) => {
   const graphData = await getGraphDataPayload();
   res.status(200).json({
