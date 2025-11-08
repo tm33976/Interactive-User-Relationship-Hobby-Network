@@ -1,17 +1,22 @@
 import UserModel, { IUser } from '../models/User.model';
 import asyncHandler from '../utils/asyncHandler';
 import { Response } from 'express';
-import { Node,  Edge } from 'reactflow'; 
 
+/**
+ * --- Private Helper Function ---
+ */
+// --- FIX: Revert types to generic 'any' arrays ---
 const getGraphDataPayload = async (): Promise<{
-  nodes: Node<IUser>[]; 
-  edges: Edge[];
+  nodes: any[];
+  edges: any[];
   users: IUser[];
 }> => {
-  // Fetch all users
+  // --- END OF FIX ---
+
+  // 1. Fetch all users
   const allUsers = await UserModel.find({});
 
-  // Calculate popularity scores for everyone
+  // 2. Calculate popularity scores
   const usersWithScores = await Promise.all(
     allUsers.map(async (user) => {
       const score = await user.calculatePopularityScore(allUsers);
@@ -21,35 +26,30 @@ const getGraphDataPayload = async (): Promise<{
     })
   );
 
-  //Map users to React Flow 'nodes'
-  const nodes: Node<IUser>[] = usersWithScores.map((user) => {
+  // 3. Map users to React Flow 'nodes'
+  // --- FIX: Revert type to generic 'any' array ---
+  const nodes: any[] = usersWithScores.map((user) => {
     const nodeType = user.popularityScore > 5 ? 'highScoreNode' : 'lowScoreNode';
 
     return {
       id: user.id.toString(),
       type: nodeType,
       position: { x: Math.random() * 500, y: Math.random() * 500 },
+      // --- FIX: Simplified data object. We ONLY send what the frontend needs. ---
       data: {
-        
         id: user.id.toString(),
-       
-        
         username: user.username,
         age: user.age,
         hobbies: user.hobbies,
         popularityScore: user.popularityScore,
-       
-        _id: user.id.toString(),
-        friends: user.friends,
-        createdAt: user.createdAt,
-        calculatePopularityScore: () => Promise.resolve(0),
-        isFriendWith: () => false,
       },
+      // --- END OF FIX ---
     };
   });
 
-  // Map friendships to React Flow edges
-  const edges: Edge[] = [];
+  // 4. Map friendships to React Flow 'edges'
+  // --- FIX: Revert type to generic 'any' array ---
+  const edges: any[] = [];
   const edgeSet = new Set<string>();
 
   for (const user of usersWithScores) {
@@ -85,7 +85,7 @@ export const getGraphData = asyncHandler(async (req, res, next) => {
 });
 
 /**
- *  Public Helper Function 
+ * --- Public Helper Function ---
  */
 export const sendLatestGraphData = async (res: Response, message: string) => {
   const graphData = await getGraphDataPayload();
