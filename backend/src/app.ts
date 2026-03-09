@@ -42,16 +42,15 @@ app.get('/', (req, res) => {
 const PING_INTERVAL = 14 * 60 * 1000; 
 
 function keepAlive() {
-
-  const selfUrl = `${process.env.BACKEND_URL}/health`;
+  const selfUrl = `${process.env.BACKEND_URL}/api/health`; // Updated to match your /api/health route
 
   setInterval(async () => {
     try {
       console.log('📡 Keep-Alive: Pinging self to prevent Render sleep...');
       const response = await axios.get(selfUrl);
-      console.log(`✅ Keep-Alive Status: ${response.status} (${response.data.status || 'OK'})`);
-    } catch (error) {
-      console.error('⚠️ Keep-Alive Failed:', error.message);
+      console.log(`✅ Keep-Alive Status: ${response.status}`);
+    } catch (error: any) { // Using 'any' or a type guard fixes the TS18046 error
+      console.error('⚠️ Keep-Alive Failed:', error?.message || 'Unknown error');
     }
   }, PING_INTERVAL);
 }
