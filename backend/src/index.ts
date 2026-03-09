@@ -9,7 +9,23 @@ dotenv.config();
 
 const port = process.env.PORT || 5000;
 
-if (cluster.isPrimary) {
+const startWorker = async () => {
+  try {
+    logger.info(`Worker ${process.pid} connecting to database...`);
+    await connectDB(); 
+    
+    const server = http.createServer(app);
+    server.listen(port, () => {
+      logger.info(`Worker ${process.pid} started. Server running on http://localhost:${port}`);
+    });
+  } catch (error) {
+    logger.error(`Worker ${process.pid} failed to start:`, error as Error);
+    process.exit(1); 
+  }
+};
+
+// ✅ Skip clustering in development — ts-node-dev is incompatible with it
+if (process.env.NODE_ENV === 'production' && cluster.isPrimary) {
   const numCPUs = os.cpus().length;
   logger.info(`Primary process ${process.pid} is running`);
   logger.info(`Forking server for ${numCPUs} CPUs`);
@@ -18,30 +34,12 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
 
-  cluster.on('exit', (worker, code, signal) => {
+  cluster.on('exit', (worker) => {
     logger.warn(`Worker ${worker.process.pid} died. Forking a new worker...`);
     cluster.fork();
   });
 
 } else {
-    const startWorker = async () => {
-    try {
-      // 1. Await the DB connection
-      logger.info(`Worker ${process.pid} connecting to database...`);
-      await connectDB(); 
-      
-      //Once connected, create and start the server
-      const server = http.createServer(app);
-      server.listen(port, () => {
-        logger.info(`Worker ${process.pid} started. Server running on http://localhost:${port}`);
-      });
-
-    } catch (error) {
-      logger.error(`Worker ${process.pid} failed to start:`, error as Error);
-      process.exit(1); 
-    }
-  };
-
+  // Runs directly in development, or as a worker in production
   startWorker();
-
 }
