@@ -8,7 +8,7 @@ import graphRoutes from './routes/graph.routes';
 import { globalErrorHandler, notFoundHandler } from './middleware/error.middleware';
 
 const app = express();
-
+const axios = require('axios');
 //  Middleware 
 app.use(helmet());
 
@@ -36,6 +36,42 @@ app.use('/api/graph', graphRoutes);
 app.get('/', (req, res) => {
     res.send('Welcome to the Cybernauts API!');
 });
+
+
+// Keep alive script
+const PING_INTERVAL = 14 * 60 * 1000; 
+
+function keepAlive() {
+
+  const selfUrl = `${process.env.BACKEND_URL}/health`;
+
+  setInterval(async () => {
+    try {
+      console.log('📡 Keep-Alive: Pinging self to prevent Render sleep...');
+      const response = await axios.get(selfUrl);
+      console.log(`✅ Keep-Alive Status: ${response.status} (${response.data.status || 'OK'})`);
+    } catch (error) {
+      console.error('⚠️ Keep-Alive Failed:', error.message);
+    }
+  }, PING_INTERVAL);
+}
+
+/**
+ * START THE PINGER
+ * Ensure the server is listening before starting the heartbeat.
+ * Replace 'PORT' with your existing port variable.
+ */
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  
+
+  if (process.env.NODE_ENV === 'production' && process.env.BACKEND_URL) {
+    keepAlive();
+  }
+});
+
+
 
 // Error Handling
 app.use(notFoundHandler);
