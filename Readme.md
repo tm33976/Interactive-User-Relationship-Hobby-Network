@@ -1,5 +1,5 @@
 # Project: Interactive User Relationship & Hobby Network
-### Cybernauts Development Assignment
+
 
 This is a full-stack MERN application that manages users and their relationships, visualized as a dynamic, interactive graph using React Flow.
 
