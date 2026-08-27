@@ -14,6 +14,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Toaster, toast } from "react-hot-toast";
+import FormInput from "./components/FormInput";
 import {
   Users,
   Search,
@@ -96,12 +97,14 @@ function GraphApp() {
 
       <button
         onClick={() => setIsLeftSidebarOpen(true)}
+        aria-label="Open hobbies panel"
         className="sm:hidden absolute top-4 left-4 z-20 p-2 bg-zinc-800/80 backdrop-blur-md rounded-lg"
       >
         <Droplet className="w-5 h-5" />
       </button>
       <button
         onClick={() => setIsRightSidebarOpen(true)}
+        aria-label="Open management panel"
         className="sm:hidden absolute top-4 right-4 z-20 p-2 bg-zinc-800/80 backdrop-blur-md rounded-lg"
       >
         <Menu className="w-5 h-5" />
@@ -112,14 +115,14 @@ function GraphApp() {
         onClose={() => setIsLeftSidebarOpen(false)}
       />
 
-      <div className="w-full h-full">
+      <main className="w-full h-full">
         <GraphCanvas
           onNodeClick={(id) => {
             setSelectedNodeId(id);
             setIsRightSidebarOpen(true);
           }}
         />
-      </div>
+      </main>
 
       <ManagementPanel
         isOpen={isRightSidebarOpen}
@@ -271,7 +274,11 @@ function Sidebar({
           <Droplet className="w-5 h-5 mr-2 text-green-400" />
           Hobbies
         </h2>
-        <button onClick={onClose} className="sm:hidden">
+        <button
+          onClick={onClose}
+          className="sm:hidden"
+          aria-label="Close hobbies panel"
+        >
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -279,6 +286,7 @@ function Sidebar({
       <div className="relative mb-4">
         <input
           type="text"
+          aria-label="Search hobbies"
           placeholder="Search hobbies..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -348,7 +356,11 @@ function ManagementPanel({
           <Users className="w-5 h-5 mr-2 text-blue-400" />
           Management
         </h2>
-        <button onClick={onClose} className="sm:hidden">
+        <button
+          onClick={onClose}
+          className="sm:hidden"
+          aria-label="Close management panel"
+        >
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -558,32 +570,6 @@ function EditUserForm({
 }
 
 //  Reusable UI Components
-
-function FormInput({
-  label,
-  value,
-  onChange,
-  ...props
-}: {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-  [key: string]: any;
-}) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-zinc-300 mb-1">
-        {label}
-      </label>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-zinc-700 border border-zinc-600 rounded-md py-2 px-3 text-sm"
-        {...props}
-      />
-    </div>
-  );
-}
 
 function LoadingSpinner() {
   return (
