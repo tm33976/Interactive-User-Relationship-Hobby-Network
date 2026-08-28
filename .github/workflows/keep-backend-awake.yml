@@ -1,0 +1,33 @@
+name: keep backend awake
+
+# Render's free tier sleeps a service after ~15 minutes without inbound
+# traffic, and the first request afterwards waits 30-60s for a cold start.
+# The backend already pings itself, but that only helps while it is running —
+# nothing inside a sleeping instance can wake it. This does that from outside.
+#
+# The window is deliberate: 02:00-19:59 UTC is roughly 07:30-01:30 IST. Free
+# instances get 750 hours a month and staying awake around the clock would use
+# about 720, leaving no room for anything else on the account.
+
+on:
+  schedule:
+    - cron: "*/10 2-19 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          URL="https://cybernauts-backend-lb3k.onrender.com/api/health"
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 "$URL" || echo 000)
+            echo "attempt $attempt: HTTP $code"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "backend did not return 200 after 3 attempts"
+          exit 1
