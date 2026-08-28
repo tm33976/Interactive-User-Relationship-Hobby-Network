@@ -15,7 +15,12 @@ const connectDB = async () => {
       logger.error("MONGO_URI is not defined in .env file.");
       process.exit(1);
     }
-    await mongoose.connect(mongoUri, {});
+    // Default maxPoolSize is 100 per process, which a free Atlas cluster
+    // (500 connection cap) cannot absorb once there is more than one worker.
+    await mongoose.connect(mongoUri, {
+      maxPoolSize: Number(process.env.MONGO_POOL_SIZE) || 10,
+      serverSelectionTimeoutMS: 10000,
+    });
 
     logger.info("MongoDB Connected successfully.");
     mongoose.connection.on("error", (err) => {
