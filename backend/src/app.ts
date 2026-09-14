@@ -28,6 +28,10 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'UP' });
 });
 
+app.get('/api/version-check', (req, res) => {
+  res.json({ marker: 'BUILD-CHECK-9182', time: new Date().toISOString() });
+});
+
 // TEMPORARY DEBUG ROUTE — remove after diagnosing
 app.get('/api/ping-db', async (req, res) => {
   const start = Date.now();
