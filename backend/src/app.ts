@@ -34,6 +34,9 @@ app.get('/api/ping-db', async (req, res) => {
   try {
     await mongoose.connect(process.env.MONGO_URI as string, {
       serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      socketTimeoutMS: 5000,
+      family: 4,
     });
     res.json({ ok: true, ms: Date.now() - start });
   } catch (e: any) {
