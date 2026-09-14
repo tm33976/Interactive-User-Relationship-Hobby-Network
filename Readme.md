@@ -7,7 +7,7 @@ The backend is a production-ready, clustered Node.js (Express + TypeScript) API,
 
 ## Live Demo
 
-**https://cybernauts-frontend.onrender.com**
+**https://interactive-user-relationship-hobby-psi.vercel.app/**
 
 
 
