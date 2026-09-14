@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import mongoose from 'mongoose';
 import { logger } from './utils/logger';
 import userRoutes from './routes/user.routes';
 import graphRoutes from './routes/graph.routes';
@@ -26,6 +27,20 @@ app.use(morgan('tiny', {
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'UP' });
 });
+
+// TEMPORARY DEBUG ROUTE — remove after diagnosing
+app.get('/api/ping-db', async (req, res) => {
+  const start = Date.now();
+  try {
+    await mongoose.connect(process.env.MONGO_URI as string, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    res.json({ ok: true, ms: Date.now() - start });
+  } catch (e: any) {
+    res.status(500).json({ ok: false, ms: Date.now() - start, error: e.message });
+  }
+});
+
 app.use('/api/users', userRoutes);
 app.use('/api/graph', graphRoutes);
 app.get('/', (req, res) => {
